@@ -12,7 +12,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 const replaceImage = (url = '') => {
-  return url.replace('http', 'https').replace('_1.jpg', '_4.jpg').replace('_1.png', '_4.png');
+  return url.replace('http:', 'https:').replace('_1.jpg', '_4.jpg').replace('_1.png', '_4.png');
 };
 
 function _default(instance) {
@@ -33,6 +33,7 @@ function _default(instance) {
         name: info.artistName
       }],
       name: info.songName,
+      link: `https://www.xiami.com/song/${info.song_id}`,
       id: info.songId,
       cp: !info.listenFiles.length,
       dl: !info.needPayFlag,
@@ -63,6 +64,7 @@ function _default(instance) {
         name: info.artist_name
       }],
       name: info.song_name,
+      link: `https://www.xiami.com/song/${info.song_id}`,
       id: info.song_id,
       cp: !info.listen_file,
       dl: !info.need_pay_flag,

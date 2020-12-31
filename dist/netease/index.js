@@ -11,31 +11,6 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-const top_list_all = {
-  "0": ["云音乐新歌榜", "3779629"],
-  "1": ["云音乐热歌榜", "3778678"],
-  "2": ["网易原创歌曲榜", "2884035"],
-  "3": ["云音乐飙升榜", "19723756"],
-  "4": ["云音乐电音榜", "10520166"],
-  "5": ["UK排行榜周榜", "180106"],
-  "6": ["美国Billboard周榜", "60198"],
-  "7": ["KTV嗨榜", "21845217"],
-  "8": ["iTunes榜", "11641012"],
-  "9": ["Hit FM Top榜", "120001"],
-  "10": ["日本Oricon周榜", "60131"],
-  "11": ["韩国Melon排行榜周榜", "3733003"],
-  "12": ["韩国Mnet排行榜周榜", "60255"],
-  "13": ["韩国Melon原声周榜", "46772709"],
-  "14": ["中国TOP排行榜(港台榜)", "112504"],
-  "15": ["中国TOP排行榜(内地榜)", "64016"],
-  "16": ["香港电台中文歌曲龙虎榜", "10169002"],
-  "17": ["华语金曲榜", "4395559"],
-  "18": ["中国嘻哈榜", "1899724"],
-  "19": ["法国 NRJ EuroHot 30周榜", "27135204"],
-  "20": ["台湾Hito排行榜", "112463"],
-  "21": ["Beatport全球电子舞曲榜", "3812895"]
-};
-
 function _default(instance) {
   // getRestrictLevel方法 来源于网易云音乐web端代码
   const getRestrictLevel = function getRestrictLevel(bm5r, fC7v) {
@@ -93,6 +68,7 @@ function _default(instance) {
         };
       }),
       name: info.name,
+      link: `https://music.163.com/#/song?id=${info.id}`,
       id: info.id,
       cp: disable(info, privilege),
       dl: !privilege.fee,
@@ -124,6 +100,7 @@ function _default(instance) {
         };
       }),
       name: info.name,
+      link: `https://music.163.com/#/song?id=${info.id}`,
       id: info.id,
       cp: disable(info, privilege),
       dl: !privilege.fee,
@@ -332,7 +309,7 @@ function _default(instance) {
       return _asyncToGenerator(function* () {
         try {
           const _ref3 = yield instance.post('/weapi/v3/playlist/detail', {
-            id: top_list_all[id][1],
+            id,
             limit: 30,
             offset: 0,
             total: true,
@@ -531,7 +508,7 @@ function _default(instance) {
           }),
                 data = _ref7.data;
 
-          const pattern = /<script[^>]*>\s*window\.Gbanners\s*=\s*([^;]+?);\s*<\/script>/g;
+          const pattern = /window.Gbanners[\s\S]+?(\[[\s\S]+?\])/;
           const banners = pattern.exec(data)[1];
           return {
             status: true,
@@ -684,6 +661,34 @@ function _default(instance) {
             msg: '请求失败',
             log: e
           };
+        }
+      })();
+    },
+
+    getAllTopList() {
+      return _asyncToGenerator(function* () {
+        try {
+          const data = yield instance.post('/weapi/toplist/detail', {});
+          return {
+            status: true,
+            data: data.list.map(item => {
+              return {
+                id: item.id,
+                name: item.name,
+                cover: item.coverImgUrl,
+                list: item.tracks.map(track => {
+                  return {
+                    artists: [{
+                      name: track.second
+                    }],
+                    name: track.first
+                  };
+                })
+              };
+            })
+          };
+        } catch (e) {
+          return e;
         }
       })();
     }

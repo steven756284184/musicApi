@@ -16,6 +16,7 @@ export default function (instance) {
                 }
             }),
             name: info.title,
+            link: `https://y.qq.com/n/yqq/song/${info.mid}.html`,
             id: info.id,
             cp: info.action.msg === 3 || !info.interval,
             dl: !info.pay.pay_down,
@@ -42,6 +43,7 @@ export default function (instance) {
                 }
             }),
             name: info.songname,
+            link: `https://y.qq.com/n/yqq/song/${info.mid}.html`,
             id: info.songid,
             cp: info.msgid === 3 || !info.interval,
             dl: !info.pay.paydownload,
@@ -129,9 +131,18 @@ export default function (instance) {
             const uin = '0'
             let data
             try {
-                const {req: {data: {midurlinfo, testfile2g}}} = await instance.get('/cgi-bin/musicu.fcg', {
+                const {req: {data: {freeflowsip}}, req_0: {data: {midurlinfo}}} = await instance.get('/cgi-bin/musicu.fcg', {
                     data: JSON.stringify({
                         "req": {
+                            "module": "CDN.SrfCdnDispatchServer",
+                            "method": "GetCdnDispatch",
+                            "param": {
+                                guid,
+                                "calltype": 0,
+                                "userip": ""
+                            }
+                        },
+                        "req_0": {
                             "module": "vkey.GetVkeyServer",
                             "method": "CgiGetVkey",
                             "param": {
@@ -148,34 +159,12 @@ export default function (instance) {
                 }, {
                     newApi: true
                 })
-                const key = midurlinfo[0].vkey || (testfile2g.match(/vkey=(\w+)/) || [])[1]
-                switch (br) {
-                    case 128000:
-                        data = {
-                            status: true,
-                            data: {
-                                url: `http://isure.stream.qqmusic.qq.com/M500${mid}.mp3?vkey=${key}&guid=${guid}&fromtag=30`
-                            }
-                        }
-                        break
-                    case 320000:
-                        data = {
-                            status: true,
-                            data: {
-                                url: `http://isure.stream.qqmusic.qq.com/M800${mid}.mp3?vkey=${key}&guid=${guid}&fromtag=30`
-                            }
-                        }
-                        break
-                    case 999000:
-                        data = {
-                            status: true,
-                            data: {
-                                url: `http://isure.stream.qqmusic.qq.com/F000${mid}.flac?vkey=${key}&guid=${guid}&fromtag=54`
-                            }
-                        }
-                        break
-                    default:
-                        throw new Error('br有误')
+                const host = freeflowsip[0]
+                data = {
+                    status: true,
+                    data: {
+                        url: host + midurlinfo[0].purl
+                    }
                 }
             } catch (e) {
                 data = {
@@ -369,13 +358,13 @@ export default function (instance) {
                         return {
                             id: item.topID,
                             name: item.ListName,
-                            cover: item.MacListPicUrl,
+                            cover: item.pic_v12,
                             list: item.songlist.map((item, i) => {
                                 return {
-                                    artists: {
+                                    artists: [{
                                         id: item.singerid,
                                         name: item.singername
-                                    },
+                                    }],
                                     name: item.songname,
                                     id: item.songid
                                 }
@@ -402,7 +391,7 @@ export default function (instance) {
                     data: {
                         name: data.topinfo.ListName,
                         description: data.topinfo.info,
-                        cover: data.topinfo.MacDetailPicUrl,
+                        cover: data.topinfo.pic_v12,
                         playCount: data.topinfo.listennum,
                         list: data.songlist.map(item => getMusicInfo2(item.data))
                     }

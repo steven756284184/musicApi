@@ -1,7 +1,7 @@
 import {lyric_decode, noSongsDetailMsg} from '../util'
 
 const replaceImage = (url = '') => {
-    return url.replace('http', 'https').replace('_1.jpg', '_4.jpg').replace('_1.png', '_4.png')
+    return url.replace('http:', 'https:').replace('_1.jpg', '_4.jpg').replace('_1.png', '_4.png')
 }
 export default function (instance) {
     const getMusicInfo = (info) => {
@@ -21,6 +21,7 @@ export default function (instance) {
                 name: info.artistName
             }],
             name: info.songName,
+            link: `https://www.xiami.com/song/${info.song_id}`,
             id: info.songId,
             cp: !info.listenFiles.length,
             dl: !info.needPayFlag,
@@ -50,6 +51,7 @@ export default function (instance) {
                 name: info.artist_name
             }],
             name: info.song_name,
+            link: `https://www.xiami.com/song/${info.song_id}`,
             id: info.song_id,
             cp: !info.listen_file,
             dl: !info.need_pay_flag,
